@@ -1257,7 +1257,7 @@ Status Reason
 (^404) One or both not found
 
 
-#### GET /students/testStatus/{testId}
+#### GET /admin/testStatus/{testId}
 
 Description: Returns test results of all students who attempted a specific
 scheduled test. Scoped to admin's colleges/branches. For class-wide
@@ -1998,7 +1998,7 @@ students side-
 by-side
 ```
 ```
-GET /students/testStatus/{testId} Admin
+GET /admin/testStatus/{testId} Admin
 ```
 ```
 All students'

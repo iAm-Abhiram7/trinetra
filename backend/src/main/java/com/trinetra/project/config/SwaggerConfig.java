@@ -31,6 +31,9 @@ public class SwaggerConfig {
             .addTagsItem(new Tag().name("Super Admin - Tests"))
             .addTagsItem(new Tag().name("Super Admin - Users"))
             .addTagsItem(new Tag().name("Super Admin - Admins"))
-            .addTagsItem(new Tag().name("Super Admin - Results"));
+            .addTagsItem(new Tag().name("Super Admin - Results"))
+            .addTagsItem(new Tag().name("Admin Approvals"))
+            .addTagsItem(new Tag().name("Admin Students"))
+            .addTagsItem(new Tag().name("Admin History"));
     }
 }
