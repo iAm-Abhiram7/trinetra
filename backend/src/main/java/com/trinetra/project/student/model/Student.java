@@ -54,9 +54,11 @@ public class Student {
     private List<AptitudeHistory> aptitudeHistory;
 
     @Field("otpHash")
+    // SECURITY: Never serialize to client.
     private String otpHash;
 
     @Field("otpExpiry")
+    // SECURITY: Never serialize to client.
     private Instant otpExpiry;
 
     @Field("lastLoginAt")

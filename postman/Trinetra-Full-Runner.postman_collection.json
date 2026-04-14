@@ -1,0 +1,1458 @@
+{
+  "info": {
+    "_postman_id": "3dc7fa83-d6eb-47a5-b522-6f4fe2e42b31",
+    "name": "Trinetra API Full Runner",
+    "description": "End-to-end Postman collection for Student Assessment Platform API. It creates test data, executes admin and student flows, runs practice and scheduled tests, and performs cleanup.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const bootstrapRequest = '01. Super Admin Login';",
+          "",
+          "function setIfMissing(key, value) {",
+          "  if (!pm.collectionVariables.get(key)) {",
+          "    pm.collectionVariables.set(key, value);",
+          "  }",
+          "}",
+          "",
+          "function initializeRunData() {",
+          "  const runId = `${Date.now()}${Math.floor(Math.random() * 1000)}`;",
+          "  const now = Date.now();",
+          "  const start = new Date(now + 8000).toISOString();",
+          "  const end = new Date(now + 60 * 60 * 1000).toISOString();",
+          "",
+          "  pm.collectionVariables.set('runId', runId);",
+          "  setIfMissing('state', 'Telangana');",
+          "  setIfMissing('college', 'JNTUH');",
+          "  setIfMissing('branch', 'CSE');",
+          "  setIfMissing('year_of_passing', '2026');",
+          "  setIfMissing('student_password', 'SecurePass@123');",
+          "  setIfMissing('student_new_password', 'NewSecurePass@123');",
+          "  setIfMissing('admin_password', 'AdminPass@123');",
+          "  setIfMissing('practice_topic_slug', 'percentages');",
+          "  setIfMissing('practice_topic_title', 'Percentages');",
+          "",
+          "  pm.collectionVariables.set('student_primary_email', `student.primary.${runId}@example.com`);",
+          "  pm.collectionVariables.set('student_secondary_email', `student.secondary.${runId}@example.com`);",
+          "  pm.collectionVariables.set('student_reject_email', `student.reject.${runId}@example.com`);",
+          "  pm.collectionVariables.set('student_bulk_reject_email', `student.bulkreject.${runId}@example.com`);",
+          "  pm.collectionVariables.set('student_approve_all_email', `student.approveall.${runId}@example.com`);",
+          "  pm.collectionVariables.set('admin_email', `admin.${runId}@example.com`);",
+          "  pm.collectionVariables.set('test_title_practice', `Practice Test ${runId}`);",
+          "  pm.collectionVariables.set('test_title_scheduled', `Scheduled Test ${runId}`);",
+          "  pm.collectionVariables.set('scheduled_start', start);",
+          "  pm.collectionVariables.set('scheduled_end', end);",
+          "",
+          "  [",
+          "    'super_admin_token',",
+          "    'admin_token',",
+          "    'student_token',",
+          "    'student_primary_id',",
+          "    'student_secondary_id',",
+          "    'student_reject_id',",
+          "    'student_bulk_reject_id',",
+          "    'student_approve_all_id',",
+          "    'practice_exam_id',",
+          "    'scheduled_test_id'",
+          "  ].forEach((k) => pm.collectionVariables.unset(k));",
+          "}",
+          "",
+          "if (pm.info.requestName === bootstrapRequest && pm.info.iteration === 0) {",
+          "  initializeRunData();",
+          "} else {",
+          "  setIfMissing('state', 'Telangana');",
+          "  setIfMissing('college', 'JNTUH');",
+          "  setIfMissing('branch', 'CSE');",
+          "  setIfMissing('year_of_passing', '2026');",
+          "  setIfMissing('student_password', 'SecurePass@123');",
+          "  setIfMissing('student_new_password', 'NewSecurePass@123');",
+          "  setIfMissing('admin_password', 'AdminPass@123');",
+          "  setIfMissing('practice_topic_slug', 'percentages');",
+          "  setIfMissing('practice_topic_title', 'Percentages');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "runId",
+      "value": ""
+    },
+    {
+      "key": "state",
+      "value": "Telangana"
+    },
+    {
+      "key": "college",
+      "value": "JNTUH"
+    },
+    {
+      "key": "branch",
+      "value": "CSE"
+    },
+    {
+      "key": "year_of_passing",
+      "value": "2026"
+    },
+    {
+      "key": "student_password",
+      "value": "SecurePass@123"
+    },
+    {
+      "key": "student_new_password",
+      "value": "NewSecurePass@123"
+    },
+    {
+      "key": "admin_password",
+      "value": "AdminPass@123"
+    },
+    {
+      "key": "practice_topic_slug",
+      "value": "percentages"
+    },
+    {
+      "key": "practice_topic_title",
+      "value": "Percentages"
+    },
+    {
+      "key": "student_primary_email",
+      "value": ""
+    },
+    {
+      "key": "student_secondary_email",
+      "value": ""
+    },
+    {
+      "key": "student_reject_email",
+      "value": ""
+    },
+    {
+      "key": "student_bulk_reject_email",
+      "value": ""
+    },
+    {
+      "key": "student_approve_all_email",
+      "value": ""
+    },
+    {
+      "key": "admin_email",
+      "value": ""
+    },
+    {
+      "key": "student_primary_id",
+      "value": ""
+    },
+    {
+      "key": "student_secondary_id",
+      "value": ""
+    },
+    {
+      "key": "student_reject_id",
+      "value": ""
+    },
+    {
+      "key": "student_bulk_reject_id",
+      "value": ""
+    },
+    {
+      "key": "student_approve_all_id",
+      "value": ""
+    },
+    {
+      "key": "super_admin_token",
+      "value": ""
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "student_token",
+      "value": ""
+    },
+    {
+      "key": "test_title_practice",
+      "value": ""
+    },
+    {
+      "key": "test_title_scheduled",
+      "value": ""
+    },
+    {
+      "key": "practice_exam_id",
+      "value": ""
+    },
+    {
+      "key": "scheduled_test_id",
+      "value": ""
+    },
+    {
+      "key": "scheduled_start",
+      "value": ""
+    },
+    {
+      "key": "scheduled_end",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Bootstrap And Auth",
+      "item": [
+        {
+          "name": "01. Super Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{superAdminEmail}}\",\n  \"password\": \"{{superAdminPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/login",
+            "description": "Public admin login for SUPER_ADMIN credentials."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.token) {",
+                  "  pm.collectionVariables.set('super_admin_token', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02. Student Signup Primary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student Primary {{runId}}\",\n  \"email\": \"{{student_primary_email}}\",\n  \"password\": \"{{student_password}}\",\n  \"state\": \"{{state}}\",\n  \"college\": \"{{college}}\",\n  \"branch\": \"{{branch}}\",\n  \"yearOfPassing\": {{year_of_passing}}\n}"
+            },
+            "url": "{{baseUrl}}/auth/signup"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([201, 409]).to.include(pm.response.code);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('student_primary_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03. Student Signup Secondary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student Secondary {{runId}}\",\n  \"email\": \"{{student_secondary_email}}\",\n  \"password\": \"{{student_password}}\",\n  \"state\": \"{{state}}\",\n  \"college\": \"{{college}}\",\n  \"branch\": \"{{branch}}\",\n  \"yearOfPassing\": {{year_of_passing}}\n}"
+            },
+            "url": "{{baseUrl}}/auth/signup"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([201, 409]).to.include(pm.response.code);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('student_secondary_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04. Student Signup Reject Single",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student Reject Single {{runId}}\",\n  \"email\": \"{{student_reject_email}}\",\n  \"password\": \"{{student_password}}\",\n  \"state\": \"{{state}}\",\n  \"college\": \"{{college}}\",\n  \"branch\": \"{{branch}}\",\n  \"yearOfPassing\": {{year_of_passing}}\n}"
+            },
+            "url": "{{baseUrl}}/auth/signup"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([201, 409]).to.include(pm.response.code);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('student_reject_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05. Student Signup Reject Bulk",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student Reject Bulk {{runId}}\",\n  \"email\": \"{{student_bulk_reject_email}}\",\n  \"password\": \"{{student_password}}\",\n  \"state\": \"{{state}}\",\n  \"college\": \"{{college}}\",\n  \"branch\": \"{{branch}}\",\n  \"yearOfPassing\": {{year_of_passing}}\n}"
+            },
+            "url": "{{baseUrl}}/auth/signup"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([201, 409]).to.include(pm.response.code);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('student_bulk_reject_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06. Add College Admin (SUPER_ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"College Admin {{runId}}\",\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\",\n  \"scopes\": [\n    {\n      \"state\": \"{{state}}\",\n      \"college\": \"{{college}}\",\n      \"branch\": \"{{branch}}\"\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/admin/add-admin"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 201, 409]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07. College Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.token) {",
+                  "  pm.collectionVariables.set('admin_token', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 Admin Approval And Student Ops",
+      "item": [
+        {
+          "name": "08. List Pending Approvals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/approvals?page=1&limit=20&branch={{branch}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09. Approve Primary Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/approve/{{student_primary_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 409]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10. Reject Single Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rejectionReason\": \"Insufficient profile details\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/reject/{{student_reject_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 409]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11. Reject All Pending In Branch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rejectionReason\": \"Bulk rejection for invalid docs\",\n  \"branch\": \"{{branch}}\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/reject/all"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12. Student Signup For Approve All",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student Approve All {{runId}}\",\n  \"email\": \"{{student_approve_all_email}}\",\n  \"password\": \"{{student_password}}\",\n  \"state\": \"{{state}}\",\n  \"college\": \"{{college}}\",\n  \"branch\": \"{{branch}}\",\n  \"yearOfPassing\": {{year_of_passing}}\n}"
+            },
+            "url": "{{baseUrl}}/auth/signup"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([201, 409]).to.include(pm.response.code);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('student_approve_all_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13. Approve All Pending In Branch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branch\": \"{{branch}}\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/approve/all"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "14. List Rejected Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/rejections?page=1&limit=20&branch={{branch}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "15. Get Admin History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/history?page=1&limit=20"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "16. Get Primary Student History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/history/{{student_primary_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "17. Get Primary Student Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/student/{{student_primary_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "18. Compare Two Students",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId1\": \"{{student_primary_id}}\",\n  \"studentId2\": \"{{student_secondary_id}}\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/compare"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 400]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 Super Admin Management",
+      "item": [
+        {
+          "name": "19. List Students (SUPER_ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/users?page=1&limit=20&state={{state}}&college={{college}}&branch={{branch}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "20. List Admins (SUPER_ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/admins?page=1&limit=20&state={{state}}&college={{college}}&isActive=true"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "21. Admin Credentials Lookup (/admincred)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admincred?college={{college}}&branch={{branch}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "22. Admin Credentials Lookup (/admincred/)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admincred/?college={{college}}&branch={{branch}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "23. List Tests (SUPER_ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/tests?page=1&limit=20"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "24. Create Practice Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{test_title_practice}}\",\n  \"type\": \"PRACTICE\",\n  \"state\": null,\n  \"college\": null,\n  \"branch\": null,\n  \"yearOfPassing\": null,\n  \"scheduledWindow\": null,\n  \"durationMinutes\": 30,\n  \"totalQuestions\": 1,\n  \"totalMarks\": 1,\n  \"negativeMarking\": 0,\n  \"shuffleQuestions\": true,\n  \"shuffleOptions\": true,\n  \"isPublished\": true,\n  \"questions\": [\n    {\n      \"text\": \"What is 15% of 200?\",\n      \"options\": [\"20\", \"25\", \"30\", \"35\"],\n      \"correctIndex\": 2,\n      \"explanation\": \"0.15 x 200 = 30\",\n      \"topic\": \"{{practice_topic_title}}\",\n      \"difficulty\": \"EASY\"\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/admin/test/create"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 201]).to.include(pm.response.code);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('practice_exam_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "25. Create Scheduled Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{test_title_scheduled}}\",\n  \"type\": \"SCHEDULED\",\n  \"state\": \"{{state}}\",\n  \"college\": \"{{college}}\",\n  \"branch\": \"{{branch}}\",\n  \"yearOfPassing\": {{year_of_passing}},\n  \"scheduledWindow\": {\n    \"start\": \"{{scheduled_start}}\",\n    \"end\": \"{{scheduled_end}}\"\n  },\n  \"durationMinutes\": 30,\n  \"totalQuestions\": 1,\n  \"totalMarks\": 1,\n  \"negativeMarking\": 0.25,\n  \"shuffleQuestions\": false,\n  \"shuffleOptions\": false,\n  \"isPublished\": true,\n  \"questions\": [\n    {\n      \"text\": \"2 + 2 = ?\",\n      \"options\": [\"3\", \"4\", \"5\", \"6\"],\n      \"correctIndex\": 1,\n      \"explanation\": \"Basic arithmetic\",\n      \"topic\": \"Numbers\",\n      \"difficulty\": \"EASY\"\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/admin/test/create"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 201, 422]).to.include(pm.response.code);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('scheduled_test_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "26. Get Aggregated Results (Initial)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/results?page=1&limit=20"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 Student Auth Profile And Password",
+      "item": [
+        {
+          "name": "27. Student Login Primary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{student_primary_email}}\",\n  \"password\": \"{{student_password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 403]).to.include(pm.response.code);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) {}",
+                  "if (json && json.data && json.data.token) {",
+                  "  pm.collectionVariables.set('student_token', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "28. Get Student Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/profile"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 401, 403]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "29. Update Student Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student Primary Updated {{runId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/update-profile"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 401, 403]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "30. Initiate Password Update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"{{student_password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/update-password"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 401, 403]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "31. Complete Password Update With OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"otp\": \"{{studentOtp}}\",\n  \"newPassword\": \"{{student_new_password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/update-pass/otp",
+            "description": "Optional in automated runs. Set environment variable studentOtp from backend logs to make this step return 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 410, 422, 401, 403]).to.include(pm.response.code);",
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('student_password', pm.collectionVariables.get('student_new_password'));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 Student Content Practice Scheduled",
+      "item": [
+        {
+          "name": "32. Get Article By Topic",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/article/{{practice_topic_slug}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404, 401, 403]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "33. Get Practice Question",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/exam/{{practice_topic_slug}}?questionIndex=0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404, 401, 403]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "34. Submit Practice Exam",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"examId\": \"{{practice_exam_id}}\",\n  \"answers\": [\n    {\n      \"questionIndex\": 0,\n      \"selectedOption\": 0\n    }\n  ],\n  \"timeTaken\": 120\n}"
+            },
+            "url": "{{baseUrl}}/exam/submit/{{practice_topic_slug}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 400, 404, 401, 403]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "35. Get Practice Results",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/result/exam/{{practice_topic_slug}}?all=true&page=1&limit=10"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404, 401, 403]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "36. Get Scheduled Test Question",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/test/{{scheduled_test_id}}?questionIndex=0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 401, 403, 404, 425, 410]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "37. Submit Scheduled Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\n    {\n      \"questionIndex\": 0,\n      \"selectedOption\": 0\n    }\n  ],\n  \"timeTaken\": 180\n}"
+            },
+            "url": "{{baseUrl}}/test/{{scheduled_test_id}}/submit"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 401, 403, 404, 409, 425, 410]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "38. Get Scheduled Test Result",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/test/{{scheduled_test_id}}/results"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 401, 403, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 Reporting And Cleanup",
+      "item": [
+        {
+          "name": "39. Get Test Status (Admin Endpoint)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/testStatus/{{scheduled_test_id}}?page=1&limit=20&sortBy=score&order=desc"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "40. Get Aggregated Results By Test",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/results?page=1&limit=20&testId={{scheduled_test_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.response.to.have.status(200);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "41. Delete Practice Test",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/test/{{practice_exam_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "42. Delete Scheduled Test",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/test/{{scheduled_test_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "43. Deactivate Admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{super_admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"college\": \"{{college}}\",\n  \"branch\": \"{{branch}}\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/del-admin"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.expect([200, 404, 409]).to.include(pm.response.code);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

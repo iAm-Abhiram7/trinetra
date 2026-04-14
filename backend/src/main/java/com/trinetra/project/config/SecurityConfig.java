@@ -39,6 +39,9 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // NOTE: JWT does not reflect real-time approvalStatus changes.
+            // Token remains valid until expiry even if status changes.
+            // For immediate revocation, implement token blacklisting (future enhancement).
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.POST, "/admin/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/signup").permitAll()
@@ -51,8 +54,15 @@ public class SecurityConfig {
                 .requestMatchers("/admin/add-admin").hasRole("SUPER_ADMIN")
                 .requestMatchers("/admincred/**").hasRole("SUPER_ADMIN")
                 .requestMatchers("/admin/del-admin").hasRole("SUPER_ADMIN")
+                .requestMatchers("/auth/**").hasRole("STUDENT")
+                .requestMatchers("/profile").hasRole("STUDENT")
+                .requestMatchers("/article/**").hasRole("STUDENT")
+                .requestMatchers("/exam/**").hasRole("STUDENT")
+                .requestMatchers("/result/**").hasRole("STUDENT")
+                .requestMatchers("/test/**").hasRole("STUDENT")
+                .requestMatchers("/students/**").hasAnyRole("COLLEGE_ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/admin/**").hasAnyRole("COLLEGE_ADMIN", "SUPER_ADMIN")
-                .anyRequest().hasRole("STUDENT")
+                .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(authenticationEntryPoint())
